@@ -3,6 +3,7 @@ local LocalizationService = game:GetService("LocalizationService")
 
 local Types = require(script.Parent.Parent:WaitForChild("Types"))
 local Table = require(script.Parent.Parent:WaitForChild("Utility"):WaitForChild("Table"))
+local Report = require(script.Parent.Parent:WaitForChild("Utility"):WaitForChild("Report"))
 local Processors = require(script.Parent:WaitForChild("Processors"))
 local UserIdentity = require(script.Parent:WaitForChild("UserIdentity"))
 
@@ -171,7 +172,13 @@ function Scope.AddBreadcrumb(self: Types.Scope, Breadcrumb: Types.Breadcrumb, Hi
 	if BreadcrumbFilter ~= nil then
 		local Success, Result = pcall(BreadcrumbFilter, Breadcrumb, Hint)
 
-		if not Success or Result == nil then return end
+		if not Success then
+			Report.Once("BeforeBreadcrumb", `BeforeBreadcrumb threw, dropping the breadcrumb: {tostring(Result)}`)
+
+			return
+		end
+
+		if Result == nil then return end
 
 		Breadcrumb = Result
 	end

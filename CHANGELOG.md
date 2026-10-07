@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.1.3 - 2026-10-07
+
+### Fixed
+
+- A throwing `BeforeSend` or `BeforeBreadcrumb` is reported once instead of dropping the event or breadcrumb without a trace
+- `LogServiceMessageOut` only drops messages prefixed `[SentryRoblox]`. Any game message that mentioned the SDK name anywhere was filtered before
+
+### Changed
+
+- `Client.Flush` and `Client.Close` hand off to the transport when it implements them, so a queued transport no longer reports as drained
+
 ## 2.1.2 - 2026-10-07
 
 ### Fixed
