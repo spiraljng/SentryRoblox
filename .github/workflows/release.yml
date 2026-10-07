@@ -120,4 +120,16 @@ jobs:
           WALLY_AUTH: ${{ secrets.WALLY_AUTH }}
         run: |
           wally login --token "$WALLY_AUTH"
-          wally publish
+
+          if ! OUTPUT=$(wally publish 2>&1); then
+            echo "$OUTPUT"
+            echo "::error::wally publish failed, nothing was published to Wally"
+            exit 1
+          fi
+
+          echo "$OUTPUT"
+
+          if echo "$OUTPUT" | grep -q '^Error:'; then
+            echo "::error::wally publish printed an error and exited zero, nothing was published to Wally"
+            exit 1
+          fi
