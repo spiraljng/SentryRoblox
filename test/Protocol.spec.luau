@@ -103,6 +103,19 @@ return function(t)
 			t.expect(Clean.exception[1].mechanism.handled).is(false)
 		end)
 
+		t.test("drops empty tables so they cannot encode as arrays", function()
+			local Clean = Protocol.Sanitize({
+				message = { message = "hi" },
+				tags = {},
+				extra = {},
+				contexts = {},
+			})
+
+			t.expect(Clean.tags).is(nil)
+			t.expect(Clean.extra).is(nil)
+			t.expect(Clean.contexts).is(nil)
+		end)
+
 		t.test("truncates over-long strings", function()
 			local Long = string.rep("a", 5000)
 			local Clean = Protocol.Sanitize({ message = { message = Long } }, { MaximumStringLength = 32 })

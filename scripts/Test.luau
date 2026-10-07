@@ -15,6 +15,7 @@ local Specs = {
 	"Scrubber",
 	"Table",
 	"Traceback",
+	"UserIdentity",
 }
 
 local function Suite()

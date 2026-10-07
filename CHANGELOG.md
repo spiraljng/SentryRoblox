@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.1 - 2026-10-07
+
+### Fixed
+
+- `PlayerContext` attaches the same user as `SetUser` now: `id`, `username`, `data` and `geo` with PII on, `id` alone with it off. It used to stop at `id` and `username`, and attach nothing when PII was off
+- Events no longer carry `"tags": []`, `"extra": []` or `"contexts": []`. Empty tables are skipped when the scope merges into an event, and the relay sanitizer drops them too
+
 ## 2.1.0 - 2026-10-07
 
 ### Fixed

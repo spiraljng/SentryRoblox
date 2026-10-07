@@ -4,6 +4,7 @@ local LocalizationService = game:GetService("LocalizationService")
 local Types = require(script.Parent.Parent:WaitForChild("Types"))
 local Table = require(script.Parent.Parent:WaitForChild("Utility"):WaitForChild("Table"))
 local Processors = require(script.Parent:WaitForChild("Processors"))
+local UserIdentity = require(script.Parent:WaitForChild("UserIdentity"))
 
 local Scope = {}
 local Metatable = { __index = Scope }
@@ -83,33 +84,10 @@ function Scope.SetUser(self: Types.Scope, User: Player | number | nil, Identity:
 	end
 
 	local Subject = User :: Player
-
-	if not (if Identity ~= nil then Identity else IncludeIdentity) then
-		self.user = { id = Subject.UserId }
-
-		return
-	end
-
 	local LocaleId = (if Subject == Players.LocalPlayer then LocalizationService.SystemLocaleId else Subject.LocaleId)
 
-	local CountryCode = string.split(LocaleId, "-")[2]
-
-	if CountryCode ~= nil then CountryCode = string.upper(CountryCode) end
-
-	self.user = {
-		id = Subject.UserId,
-		username = Subject.Name,
-		data = {
-			AccountAge = Subject.AccountAge,
-			MembershipType = Subject.MembershipType.Name,
-			Team = (if Subject.Team then tostring(Subject.Team) else nil),
-		},
-		geo = {
-			city = "Unknown",
-			country_code = CountryCode,
-			region = CountryCode,
-		},
-	}
+	self.user =
+		UserIdentity.FromSubject(Subject :: any, LocaleId, if Identity ~= nil then Identity else IncludeIdentity)
 end
 
 function Scope.SetExtra(self: Types.Scope, Key: string, Value: any): ()
@@ -224,6 +202,8 @@ function Scope.ApplyToEvent(self: Types.Scope, Event: Types.Event, Hint: Types.H
 		local Existing = Fields[Key]
 
 		if type(Value) == "table" then
+			if next(Value) == nil then continue end
+
 			Fields[Key] = if type(Existing) == "table" then Table.Merge(Existing, Value) else Table.DeepCopy(Value)
 		else
 			Fields[Key] = Value
