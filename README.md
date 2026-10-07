@@ -314,6 +314,15 @@ SentryRoblox:Init({
 
 **`BeforeBreadcrumb`** does the same for breadcrumbs.
 
+**Roblox-side service failures are not filtered by default.** A `502: API Services rejected request` from `DataStoreService` means Roblox failed the request rather than your script, but it surfaces through your own call, so it is also the only signal you get when saves stop working. To drop it globally, register a configured `ScriptContextError` in place of the default one:
+
+```lua
+SentryRoblox:Init({
+	DSN = DSN,
+	Integrations = { SentryRoblox.Integrations.ScriptContextError({ ExtraInternalPatterns = { "API Services rejected" } }) },
+})
+```
+
 </details>
 
 #### Privacy and grouping
