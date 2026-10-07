@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.1.2 - 2026-10-07
+
+### Fixed
+
+- Relayed client exceptions carry `level = "error"` now, matching the server path
+
 ## 2.1.1 - 2026-10-07
 
 ### Fixed

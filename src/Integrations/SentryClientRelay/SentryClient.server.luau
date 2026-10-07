@@ -28,6 +28,7 @@ ScriptContext.Error:Connect(function(Message: string, TracebackText: string, Ori
 	if not Keep then return end
 
 	Forward({
+		level = "error",
 		exception = {
 			{
 				type = "Error",
