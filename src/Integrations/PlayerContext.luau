@@ -60,6 +60,8 @@ local function PlayerContext(Options: Options?): Types.Integration
 		Implicated: { string },
 		SendPII: boolean
 	): ()
+		if Event.user ~= nil then return end
+
 		if #Implicated ~= 1 then return end
 
 		local Entry = PlayerRegistry.Find(Registry, Implicated[1])
@@ -67,22 +69,13 @@ local function PlayerContext(Options: Options?): Types.Integration
 		if Entry == nil then return end
 
 		local Subject = Players:GetPlayerByUserId(Entry.UserId)
-		local Built: Types.User
 
 		if Subject ~= nil then
-			Built = UserIdentity.FromSubject(Subject :: any, Subject.LocaleId, SendPII)
+			Event.user = UserIdentity.FromSubject(Subject :: any, Subject.LocaleId, SendPII)
 		elseif SendPII then
-			Built = { id = Entry.UserId, username = Entry.Name }
+			Event.user = { id = Entry.UserId, username = Entry.Name }
 		else
-			Built = { id = Entry.UserId }
-		end
-
-		local Existing = Event.user
-
-		if Existing == nil then
-			Event.user = Built
-		else
-			Event.user = Table.Merge(Existing, Built) :: any
+			Event.user = { id = Entry.UserId }
 		end
 	end
 
@@ -133,7 +126,11 @@ local function PlayerContext(Options: Options?): Types.Integration
 				local ImplicatedTokens: { string }
 
 				if Scrub then
+					local User = if Event.user ~= nil then Table.DeepCopy(Event.user) else nil
+
 					local _, Found = Scrubber.Apply(Event, Tokens, Placeholder)
+
+					Event.user = User
 
 					ImplicatedTokens = Found
 				else
