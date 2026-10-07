@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.1.4 - 2026-10-07
+
+### Fixed
+
+- A capture from a realm with no transport prints `capture ignored: this realm has no transport, the server does the sending` once instead of `capture failed: 0 NotInitialised`, which read like a transport failure
+
+### Changed
+
+- Documented that client capture is automatic only, that scope-local processors carry into relayed client events, and that the relay clears breadcrumbs on them
+
 ## 2.1.3 - 2026-10-07
 
 ### Fixed

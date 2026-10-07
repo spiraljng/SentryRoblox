@@ -22,6 +22,12 @@ local function ReportFailure(Response: any): ()
 
 	FailureReported = true
 
+	if Response.StatusCode == 0 and Response.StatusMessage == "NotInitialised" then
+		print("[SentryRoblox] capture ignored: this realm has no transport, the server does the sending")
+
+		return
+	end
+
 	local Body = tostring(Response.Body or "")
 
 	if #Body > 500 then Body = string.sub(Body, 1, 500) end

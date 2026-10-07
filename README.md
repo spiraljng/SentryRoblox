@@ -368,6 +368,10 @@ The server treats everything it receives as untrusted. Payloads are validated ag
 
 The client half starts on its own. It waits 30 seconds for the relay to appear. If the server never called `Init`, the relay is never created and the client quietly does nothing
 
+Capture on the client is automatic only. `CaptureException` and the rest run in the realm that called them, and the client half has no transport of its own, so a manual capture on the client goes nowhere. Forward what you need over your own remote and capture it on the server instead
+
+Relayed events land on a clone of the server's hub, so they inherit the server scope. Scope-local processors added with `Scope:AddEventProcessor` are copied along with it, which makes them the place for server-side enrichment or redaction of client events. Breadcrumbs are cleared on that clone, so a client event never carries the server's breadcrumb trail
+
 Set `SendClientEvents = false` to skip the relay entirely
 
 #### Custom integrations
