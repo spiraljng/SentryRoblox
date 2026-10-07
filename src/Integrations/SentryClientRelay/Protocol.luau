@@ -81,6 +81,8 @@ local function SanitizeValue(Value: any, Limits: Limits, Depth: number): any
 		end
 	end
 
+	if next(Result) == nil then return nil end
+
 	return Result
 end
 

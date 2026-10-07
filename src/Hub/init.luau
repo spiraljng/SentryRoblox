@@ -15,9 +15,10 @@ local StudioDropReported = false
 
 function Hub.new(ClientInstance: Types.Client?, ScopeInstance: Types.Scope?, Options: Types.Options?): Types.Hub
 	local Stack: { Types.Scope } = {}
+	local Transport = if Options ~= nil then Options.Transport else nil
 
 	return setmetatable({
-		Client = ClientInstance or ClientClass.new(),
+		Client = ClientInstance or ClientClass.new(Transport),
 		Scope = ScopeInstance or ScopeClass.new(),
 		Options = Options,
 
@@ -168,7 +169,10 @@ function Hub.GetClient(self: Types.Hub): Types.Client
 end
 
 function Hub.BindClient(self: Types.Hub, ClientInstance: Types.Client?): ()
-	self.Client = ClientInstance or ClientClass.new()
+	local Options = self.Options
+	local Transport = if Options ~= nil then Options.Transport else nil
+
+	self.Client = ClientInstance or ClientClass.new(Transport)
 end
 
 function Hub.UnbindClient(self: Types.Hub): ()

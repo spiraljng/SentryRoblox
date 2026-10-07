@@ -1,6 +1,8 @@
 local PlayerRegistry = require(script.Parent.Detection.PlayerRegistry)
 local Scrubber = require(script.Parent.Detection.Scrubber)
+local Table = require(script.Parent.Parent:WaitForChild("Utility"):WaitForChild("Table"))
 local Types = require(script.Parent:WaitForChild("Types"))
+local UserIdentity = require(script.Parent.Parent:WaitForChild("Hub"):WaitForChild("UserIdentity"))
 
 export type Options = {
 	Scrub: boolean?,
@@ -53,11 +55,12 @@ local function PlayerContext(Options: Options?): Types.Integration
 
 	local function ApplyUser(
 		Event: Types.Event,
+		Players: Players,
 		Registry: PlayerRegistry.Registry,
 		Implicated: { string },
 		SendPII: boolean
 	): ()
-		if not SendPII then return end
+		if Event.user ~= nil then return end
 
 		if #Implicated ~= 1 then return end
 
@@ -65,13 +68,15 @@ local function PlayerContext(Options: Options?): Types.Integration
 
 		if Entry == nil then return end
 
-		local Existing = Event.user
-		local User: Types.User = if Existing ~= nil then Existing else {}
+		local Subject = Players:GetPlayerByUserId(Entry.UserId)
 
-		User.id = Entry.UserId
-		User.username = Entry.Name
-
-		Event.user = User
+		if Subject ~= nil then
+			Event.user = UserIdentity.FromSubject(Subject :: any, Subject.LocaleId, SendPII)
+		elseif SendPII then
+			Event.user = { id = Entry.UserId, username = Entry.Name }
+		else
+			Event.user = { id = Entry.UserId }
+		end
 	end
 
 	return {
@@ -121,7 +126,11 @@ local function PlayerContext(Options: Options?): Types.Integration
 				local ImplicatedTokens: { string }
 
 				if Scrub then
+					local User = if Event.user ~= nil then Table.DeepCopy(Event.user) else nil
+
 					local _, Found = Scrubber.Apply(Event, Tokens, Placeholder)
+
+					Event.user = User
 
 					ImplicatedTokens = Found
 				else
@@ -136,7 +145,7 @@ local function PlayerContext(Options: Options?): Types.Integration
 					if Name ~= nil and not table.find(Implicated, Name) then table.insert(Implicated, Name) end
 				end
 
-				ApplyUser(Event, Registry, Implicated, SendPII)
+				ApplyUser(Event, Players, Registry, Implicated, SendPII)
 
 				return Event
 			end)

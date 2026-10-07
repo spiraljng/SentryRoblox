@@ -314,6 +314,15 @@ SentryRoblox:Init({
 
 **`BeforeBreadcrumb`** does the same for breadcrumbs.
 
+**Roblox-side service failures are not filtered by default.** A `502: API Services rejected request` from `DataStoreService` means Roblox failed the request rather than your script, but it surfaces through your own call, so it is also the only signal you get when saves stop working. To drop it globally, register a configured `ScriptContextError` in place of the default one:
+
+```lua
+SentryRoblox:Init({
+	DSN = DSN,
+	Integrations = { SentryRoblox.Integrations.ScriptContextError({ ExtraInternalPatterns = { "API Services rejected" } }) },
+})
+```
+
 </details>
 
 #### Privacy and grouping
@@ -330,6 +339,8 @@ Player names found in a payload are replaced with `<PLAYER>`, a single token. Th
 | `true`  | `id`, `username`, `data` and `geo` |
 
 `data` is `AccountAge`, `MembershipType`, `Team`. `geo` is derived from the player's `LocaleId`
+
+Server events that implicate exactly one player pick that player up automatically. If the player has already left, only `id` and `username` are still known, so `data` and `geo` are omitted
 
 The `id` is kept in both cases. It is a pseudonymous number that Sentry uses to count unique users, and it is metadata, so it never splits an issue
 

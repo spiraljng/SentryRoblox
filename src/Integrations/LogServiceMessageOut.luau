@@ -16,7 +16,7 @@ local LevelByMessageType: { [string]: Types.Level } = {
 	MessageOutput = "debug",
 }
 
-local SelfPattern = "SentryRoblox"
+local SelfPattern = "[SentryRoblox]"
 
 local function LogServiceMessageOut(Options: Options?): Types.Integration
 	local Settings: Options = Options or {}

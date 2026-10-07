@@ -120,6 +120,8 @@ export type Transport = {
 	Init: (self: Transport, Options: Options, ProtocolVersion: number, Client: string) -> (),
 	CaptureEvent: (self: Transport, EncodedPayload: string, EventId: string?) -> any,
 	CaptureEnvelope: (self: Transport, Payload: { [string]: any }) -> any,
+	Flush: ((self: Transport, Timeout: number?) -> boolean)?,
+	Close: ((self: Transport, Timeout: number?) -> boolean)?,
 }
 
 export type Integration<Context = any> = {
@@ -196,6 +198,8 @@ export type Scope = {
 }
 
 export type Client = {
+	Transport: Transport?,
+
 	CaptureEvent: (self: Client, Event: Event, Hint: Hint?, Scope: Scope, Options: Options?) -> any,
 	Close: (self: Client, Timeout: number?) -> boolean,
 	Flush: (self: Client, Timeout: number?) -> boolean,

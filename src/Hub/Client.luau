@@ -3,6 +3,7 @@ local HttpService = game:GetService("HttpService")
 local Constants = require(script.Parent.Parent:WaitForChild("Constants"))
 local Types = require(script.Parent.Parent:WaitForChild("Types"))
 local Table = require(script.Parent.Parent:WaitForChild("Utility"):WaitForChild("Table"))
+local Report = require(script.Parent.Parent:WaitForChild("Utility"):WaitForChild("Report"))
 local DefaultTransport = require(script.Parent.Parent:WaitForChild("Transport"))
 
 local Client = {}
@@ -38,12 +39,14 @@ local function ReportEncodeFailure(Error: any): ()
 	print(`[SentryRoblox] dropping an event that could not be encoded: {tostring(Error)}`)
 end
 
-function Client.new(): Types.Client
-	return setmetatable({}, Metatable) :: any
+function Client.new(Transport: Types.Transport?): Types.Client
+	return setmetatable({
+		Transport = Transport,
+	}, Metatable) :: any
 end
 
 function Client.CaptureEvent(
-	_Self: Types.Client,
+	Self: Types.Client,
 	Event: Types.Event,
 	Hint: Types.Hint?,
 	Scope: Types.Scope,
@@ -68,7 +71,13 @@ function Client.CaptureEvent(
 	if BeforeSend ~= nil then
 		local Success, Result = pcall(BeforeSend, Processed, ResolvedHint)
 
-		if not Success or Result == nil then return end
+		if not Success then
+			Report.Once("BeforeSend", `BeforeSend threw, dropping the event: {tostring(Result)}`)
+
+			return
+		end
+
+		if Result == nil then return end
 
 		Processed = Result
 	end
@@ -86,6 +95,9 @@ function Client.CaptureEvent(
 	end
 
 	local Transport = if Options ~= nil and Options.Transport ~= nil then Options.Transport else DefaultTransport
+
+	Self.Transport = Transport
+
 	local Response = Transport:CaptureEvent(EncodedPayload, Processed.event_id)
 
 	ReportFailure(Response)
@@ -93,12 +105,26 @@ function Client.CaptureEvent(
 	return Response
 end
 
-function Client.Close(_Self: Types.Client, _Timeout: number?): boolean
-	return true
+local function Delegate(Self: Types.Client, Name: string, Timeout: number?): boolean
+	local Transport: any = Self.Transport
+
+	if Transport == nil then return true end
+
+	local Handler: any = Transport[Name]
+
+	if Handler == nil then return true end
+
+	local Success, Result = pcall(Handler, Transport, Timeout)
+
+	return Success and Result == true
 end
 
-function Client.Flush(_Self: Types.Client, _Timeout: number?): boolean
-	return true
+function Client.Close(Self: Types.Client, Timeout: number?): boolean
+	return Delegate(Self, "Close", Timeout)
+end
+
+function Client.Flush(Self: Types.Client, Timeout: number?): boolean
+	return Delegate(Self, "Flush", Timeout)
 end
 
 return Client

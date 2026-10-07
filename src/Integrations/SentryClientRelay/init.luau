@@ -78,6 +78,7 @@ local function SentryClientRelay(Options: Options?): Types.Integration
 
 					Hub:ConfigureScope(function(Scope: any)
 						Scope.logger = "client"
+						Scope:ClearBreadcrumbs()
 						Scope:SetUser(Player)
 					end)
 
