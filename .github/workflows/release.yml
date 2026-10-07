@@ -38,7 +38,9 @@ jobs:
           echo "$RUNNER_TEMP/rokit" >> "$GITHUB_PATH"
 
       - name: Install tools
-        run: rokit install --no-trust-check
+        run: |
+          rokit install --no-trust-check
+          echo "$HOME/.rokit/bin" >> "$GITHUB_PATH"
 
       - name: Install dependencies
         run: pesde install
