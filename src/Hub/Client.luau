@@ -86,7 +86,7 @@ function Client.CaptureEvent(
 	end
 
 	local Transport = if Options ~= nil and Options.Transport ~= nil then Options.Transport else DefaultTransport
-	local Response = Transport:CaptureEvent(EncodedPayload)
+	local Response = Transport:CaptureEvent(EncodedPayload, Processed.event_id)
 
 	ReportFailure(Response)
 

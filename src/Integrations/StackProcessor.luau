@@ -60,8 +60,11 @@ local function StackProcessor(Options: Options?): Types.Integration
 
 			local function IsSdkFrame(Path: string?): boolean
 				if Path == nil then return false end
+				if string.sub(Path, 1, #SdkRoot) ~= SdkRoot then return false end
 
-				return string.sub(Path, 1, #SdkRoot) == SdkRoot
+				local Next = string.sub(Path, #SdkRoot + 1, #SdkRoot + 1)
+
+				return Next == "" or Next == "."
 			end
 
 			local function Convert(Event: any, Hint: any?): any
@@ -90,7 +93,13 @@ local function StackProcessor(Options: Options?): Types.Integration
 					if not IsSdkFrame(Parsed.Path) then table.insert(Frames, 1, Frame) end
 				end
 
-				if #Frames == 0 then Frames = Unfiltered end
+				if #Frames == 0 then
+					for _, Frame in Unfiltered do
+						Frame.in_app = false
+					end
+
+					Frames = Unfiltered
+				end
 
 				while #Frames > MaximumFrames do
 					table.remove(Frames)

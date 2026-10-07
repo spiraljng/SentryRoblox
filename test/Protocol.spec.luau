@@ -88,6 +88,21 @@ return function(t)
 			t.expect(Clean.exception[1].value).is("boom")
 		end)
 
+		t.test("keeps exception mechanism so handled state survives", function()
+			local Clean = Protocol.Sanitize({
+				exception = {
+					{
+						type = "Error",
+						value = "boom",
+						mechanism = { type = "generic", handled = false },
+					},
+				},
+			})
+
+			t.expect(Clean.exception[1].mechanism.type).is("generic")
+			t.expect(Clean.exception[1].mechanism.handled).is(false)
+		end)
+
 		t.test("truncates over-long strings", function()
 			local Long = string.rep("a", 5000)
 			local Clean = Protocol.Sanitize({ message = { message = Long } }, { MaximumStringLength = 32 })

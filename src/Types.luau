@@ -118,7 +118,7 @@ export type Processor = (Event: Event, Hint: Hint?) -> Event?
 
 export type Transport = {
 	Init: (self: Transport, Options: Options, ProtocolVersion: number, Client: string) -> (),
-	CaptureEvent: (self: Transport, EncodedPayload: string) -> any,
+	CaptureEvent: (self: Transport, EncodedPayload: string, EventId: string?) -> any,
 	CaptureEnvelope: (self: Transport, Payload: { [string]: any }) -> any,
 }
 
@@ -134,6 +134,7 @@ export type Options = {
 
 	DefaultIntegrations: boolean?,
 	Integrations: { Integration }?,
+	DisabledIntegrations: { string }?,
 
 	Release: string?,
 	Environment: string?,

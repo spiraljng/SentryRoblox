@@ -50,34 +50,18 @@ function Transport.Init(self: Transport, Options: Types.Options, ProtocolVersion
 	self.AuthHeader = Parsed.AuthHeader
 end
 
-function Transport.CaptureEvent(self: Transport, EncodedPayload: string): any
-	local BaseUrl = self.BaseUrl
-	local AuthHeader = self.AuthHeader
-
-	if BaseUrl == nil or AuthHeader == nil then return Failure(0, "NotInitialised") end
-
-	return RequestAsync({
-		Url = `{BaseUrl}store/`,
-		Method = "POST",
-		Headers = {
-			["Content-Type"] = "application/json",
-			["X-Sentry-Auth"] = AuthHeader,
-		},
-
-		Body = EncodedPayload,
+local function EncodeEnvelope(Header: { [string]: any }, Type: string, Payload: string): string
+	local HeaderLine = HttpService:JSONEncode(Header)
+	local ItemLine = HttpService:JSONEncode({
+		type = Type,
+		content_type = "application/json",
+		length = #Payload,
 	})
+
+	return table.concat({ HeaderLine, ItemLine, Payload }, "\n")
 end
 
-function Transport.CaptureEnvelope(self: Transport, Payload: { [string]: any }): any
-	local BaseUrl = self.BaseUrl
-	local AuthHeader = self.AuthHeader
-
-	if BaseUrl == nil or AuthHeader == nil then return Failure(0, "NotInitialised") end
-
-	local EncodedPayload = HttpService:JSONEncode(Payload)
-	local Envelope = HttpService:JSONEncode({ event_id = HttpService:GenerateGUID(false) })
-	local Item = HttpService:JSONEncode({ type = "session", length = #EncodedPayload })
-
+local function PostEnvelope(BaseUrl: string, AuthHeader: string, Body: string): any
 	return RequestAsync({
 		Url = `{BaseUrl}envelope/`,
 		Method = "POST",
@@ -86,8 +70,40 @@ function Transport.CaptureEnvelope(self: Transport, Payload: { [string]: any }):
 			["X-Sentry-Auth"] = AuthHeader,
 		},
 
-		Body = table.concat({ Envelope, Item, EncodedPayload }, "\n"),
+		Body = Body,
 	})
+end
+
+function Transport.CaptureEvent(self: Transport, EncodedPayload: string, EventId: string?): any
+	local BaseUrl = self.BaseUrl
+	local AuthHeader = self.AuthHeader
+
+	if BaseUrl == nil or AuthHeader == nil then return Failure(0, "NotInitialised") end
+
+	return PostEnvelope(
+		BaseUrl,
+		AuthHeader,
+		EncodeEnvelope({
+			event_id = EventId,
+			sent_at = DateTime.now():ToIsoDate(),
+		}, "event", EncodedPayload)
+	)
+end
+
+function Transport.CaptureEnvelope(self: Transport, Payload: { [string]: any }): any
+	local BaseUrl = self.BaseUrl
+	local AuthHeader = self.AuthHeader
+
+	if BaseUrl == nil or AuthHeader == nil then return Failure(0, "NotInitialised") end
+
+	return PostEnvelope(
+		BaseUrl,
+		AuthHeader,
+		EncodeEnvelope({
+			event_id = HttpService:GenerateGUID(false),
+			sent_at = DateTime.now():ToIsoDate(),
+		}, "session", HttpService:JSONEncode(Payload))
+	)
 end
 
 return Transport
