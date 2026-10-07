@@ -46,7 +46,7 @@ function Client.new(Transport: Types.Transport?): Types.Client
 end
 
 function Client.CaptureEvent(
-	_Self: Types.Client,
+	Self: Types.Client,
 	Event: Types.Event,
 	Hint: Types.Hint?,
 	Scope: Types.Scope,
@@ -95,6 +95,9 @@ function Client.CaptureEvent(
 	end
 
 	local Transport = if Options ~= nil and Options.Transport ~= nil then Options.Transport else DefaultTransport
+
+	Self.Transport = Transport
+
 	local Response = Transport:CaptureEvent(EncodedPayload, Processed.event_id)
 
 	ReportFailure(Response)

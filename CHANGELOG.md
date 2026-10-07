@@ -9,7 +9,7 @@
 
 ### Changed
 
-- `Client.Flush` and `Client.Close` hand off to the transport when it implements them, so a queued transport no longer reports as drained
+- `Client.Flush` and `Client.Close` hand off to the transport when it implements them, so a queued transport no longer reports as drained. They follow the transport that last sent an event instead of the one the hub was built with
 
 ## 2.1.2 - 2026-10-07
 
