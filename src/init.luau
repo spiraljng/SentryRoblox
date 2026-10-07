@@ -73,7 +73,26 @@ local function ResolveIntegrations(Options: Types.Options): { IntegrationTypes.I
 		end
 	end
 
-	return Requested
+	local Disabled = Options.DisabledIntegrations
+	local Positions: { [string]: number } = {}
+	local Resolved: { IntegrationTypes.Integration } = {}
+
+	for _, Integration in Requested do
+		local Name = Integration.Name
+
+		if Disabled ~= nil and table.find(Disabled, Name) ~= nil then continue end
+
+		local Position = Positions[Name]
+
+		if Position ~= nil then
+			Resolved[Position] = Integration
+		else
+			table.insert(Resolved, Integration)
+			Positions[Name] = #Resolved
+		end
+	end
+
+	return Resolved
 end
 
 function SDK.Init(self: SDK, Options: Types.Options?): ()
@@ -87,13 +106,19 @@ function SDK.Init(self: SDK, Options: Types.Options?): ()
 		return
 	end
 
+	if RunService:IsStudio() and not RunService:IsRunning() then
+		warn("[SentryRoblox] Init is inert in Studio edit mode; start a play test to capture events.")
+
+		return
+	end
+
 	local Resolved = Defaults.Resolve(Options)
 	local Realm: Types.Realm = if RunService:IsServer() then "Server" else "Client"
 
 	if Realm == "Client" then
 		self.Options = Resolved
 
-		Report("Init is server-only; the client half configures itself through the client relay.")
+		warn("[SentryRoblox] Init is server-only; the client half configures itself through the client relay.")
 
 		return
 	end

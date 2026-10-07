@@ -12,6 +12,7 @@ Defaults.Options = table.freeze({
 
 	DefaultIntegrations = true,
 	Integrations = {},
+	DisabledIntegrations = {},
 
 	Release = string.format("%d@%d", game.PlaceId, game.PlaceVersion),
 	Environment = (if RunService:IsStudio() then "studio" else "production"),

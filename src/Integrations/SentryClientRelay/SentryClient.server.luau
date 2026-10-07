@@ -32,6 +32,10 @@ ScriptContext.Error:Connect(function(Message: string, TracebackText: string, Ori
 			{
 				type = "Error",
 				value = string.match(Message, LocationPrefix) or Message,
+				mechanism = {
+					type = "generic",
+					handled = false,
+				},
 			},
 		},
 	}, TracebackText)

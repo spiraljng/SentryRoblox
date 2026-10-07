@@ -48,7 +48,7 @@ in `wally.toml`:
 
 ```toml
 [dependencies]
-SentryRoblox = "spiraljng/sentryroblox@2.0.0"
+SentryRoblox = "spiraljng/sentryroblox@2.1.0"
 ```
 
 ```sh
@@ -253,20 +253,21 @@ The buffer is capped by `MaxBreadcrumbs` and drops the oldest first, so you can 
 
 <summary>Options</summary>
 
-| option                | type            | default                   |
-| --------------------- | --------------- | ------------------------- |
-| `ServerName`          | `string`        | `game.JobId` or `"local"` |
-| `MaxBreadcrumbs`      | `number`        | `100`                     |
-| `AttachStacktrace`    | `boolean`       | `false`                   |
-| `SendStudioEvents`    | `boolean`       | `false`                   |
-| `SendClientEvents`    | `boolean`       | `true`                    |
-| `InAppInclude`        | `{string}`      | `{}`                      |
-| `InAppExclude`        | `{string}`      | `{}`                      |
-| `BeforeSend`          | `function`      | none                      |
-| `BeforeBreadcrumb`    | `function`      | none                      |
-| `DefaultIntegrations` | `boolean`       | `true`                    |
-| `Integrations`        | `{Integration}` | `{}`                      |
-| `Transport`           | `Transport`     | built-in HTTP             |
+| option                 | type            | default                   |
+| ---------------------- | --------------- | ------------------------- |
+| `ServerName`           | `string`        | `game.JobId` or `"local"` |
+| `MaxBreadcrumbs`       | `number`        | `100`                     |
+| `AttachStacktrace`     | `boolean`       | `false`                   |
+| `SendStudioEvents`     | `boolean`       | `false`                   |
+| `SendClientEvents`     | `boolean`       | `true`                    |
+| `InAppInclude`         | `{string}`      | `{}`                      |
+| `InAppExclude`         | `{string}`      | `{}`                      |
+| `BeforeSend`           | `function`      | none                      |
+| `BeforeBreadcrumb`     | `function`      | none                      |
+| `DefaultIntegrations`  | `boolean`       | `true`                    |
+| `Integrations`         | `{Integration}` | `{}`                      |
+| `DisabledIntegrations` | `{string}`      | `{}`                      |
+| `Transport`            | `Transport`     | built-in HTTP             |
 
 **`AttachStacktrace`** attaches a stack trace to messages as well as exceptions. Two consequences before you turn it on:
 
@@ -412,13 +413,22 @@ SentryRoblox:Init({
 
 Built-in integrations are set up before yours, and processors run in setup order. `StackProcessor` turns a traceback into frames before `PlayerContext` scrubs them, so a processor that rewrites the traceback has to run late.
 
-Set `DefaultIntegrations = false` to drop the built-in set and list only what you want. The built-ins are exposed on the SDK:
+Set `DefaultIntegrations = false` to drop the built-in set and list only what you want. To drop one built-in without rebuilding the list, name it in `DisabledIntegrations`. An integration whose `Name` matches a built-in replaces it in place, so you can configure a default without registering a second copy. The built-ins are exposed on the SDK:
 
 ```lua
 SentryRoblox:Init({
 	DSN = DSN,
 	DefaultIntegrations = false,
 	Integrations = { SentryRoblox.Integrations.ScriptContextError() },
+})
+```
+
+To keep every other built-in and drop just the session tracker:
+
+```lua
+SentryRoblox:Init({
+	DSN = DSN,
+	DisabledIntegrations = { "TrackSessions" },
 })
 ```
 
@@ -531,6 +541,10 @@ SentryRoblox:Init({
 
 ### More
 
+#### Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for what changed in each release.
+
 #### Acknowledgements
 
 - The original [sentry-roblox](https://github.com/devSparkle/sentry-roblox)
@@ -550,4 +564,4 @@ What changed (so far):
 - Fully typed core with a test suite
 - Bug and quirk fixes
 
-If you want the full list, it's in the commit history
+If you want the full list, it's in [the changelog](CHANGELOG.md) and the commit history
