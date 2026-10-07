@@ -5,6 +5,7 @@
 ### Fixed
 
 - Relayed client exceptions carry `level = "error"` now, matching the server path
+- Relayed client events no longer inherit the server's breadcrumb trail through the cloned hub
 
 ## 2.1.1 - 2026-10-07
 
