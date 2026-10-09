@@ -25,7 +25,7 @@ SentryRoblox:Init({
 SentryRoblox:ConfigureScope(function(Scope)
 	Scope:SetTag("region", "eu-west")
 	Scope:SetTag("build", Config.Build)
-	Scope:SetExtra("max_players", Players.MaxPlayers)
+	-- Scope:SetExtra("max_players", Players.MaxPlayers) -- https://devforum.roblox.com/t/maxplayers-and-preferredplayers-properties-are-completely-inaccurate/3655204
 end)
 
 local CoinStore = DataStoreService:GetDataStore("ExampleCoins")
