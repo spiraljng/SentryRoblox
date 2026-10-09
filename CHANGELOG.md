@@ -1,5 +1,19 @@
 # Changelog
 
+## 2.2.0 - 2026-10-08
+
+### Added
+
+- `Blocklist`, a new default integration. It fetches the curated list at [`noise/blocklist.json`](noise/blocklist.json) at startup and refreshes it hourly, so rules can be added or retired without an SDK release. A snapshot of the list ships inside the SDK and filters when HTTP requests are disabled or before the first fetch lands
+- Rules are applied to uncaught errors, `LogService` warnings and relayed client events. The server also pushes the list to clients over the relay, so known noise never spends the relay rate limit
+- `SentryRoblox.Integrations.Blocklist({ URL = ..., RefreshInterval = ..., ExtraRules = ... })` for a different list, a different refresh cadence, or local additions. Disable it with `DisabledIntegrations = { "Blocklist" }`; the shipped snapshot still filters
+- `pesde run changelog` prints the `CHANGELOG.md` section for the current version, or for one passed as an argument
+
+### Changed
+
+- GitHub releases use the matching `CHANGELOG.md` section as the release body instead of generated notes, and a re-run now updates the body of an existing release
+- `LICENSE` carries the fork's copyright next to the upstream notice
+
 ## 2.1.4 - 2026-10-07
 
 ### Fixed
