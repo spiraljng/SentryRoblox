@@ -26,6 +26,7 @@ build_files = ["src"]
 [scripts]
 sync = "scripts/Sync.luau"
 verify = "scripts/Verify.luau"
+changelog = "scripts/Changelog.luau"
 test = "scripts/Test.luau"
 analyze = "scripts/Analyze.luau"
 build = "scripts/Build.luau"

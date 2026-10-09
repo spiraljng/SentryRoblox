@@ -7,6 +7,7 @@ local tiniest = require("../lune_packages/tiniest_lune").configure({
 })
 
 local Specs = {
+	"Changelog",
 	"Dsn",
 	"Noise",
 	"PlayerRegistry",
