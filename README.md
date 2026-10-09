@@ -7,6 +7,7 @@ Works with any Sentry-compatible error tracking software, including open-source 
 ### Features
 
 - Automatic error and warning captures
+- A curated noise blocklist that updates without an SDK release
 - Scrubs PII and generalizes message info to preserve issue grouping
 - Built in client relay without DSN leakage
 - Fully typed
@@ -297,7 +298,7 @@ SentryRoblox:Init({
 
 That says only your own `ServerScriptService` and `MyGame` code is yours, and everything else, including any library you vendored into `ReplicatedStorage`, is treated as third party. Reach for `InAppExclude` instead when it is easier to list what is not yours
 
-**`BeforeSend`** runs after the scope merge and before encoding. Return the event to send it, return `nil` to drop it. This SDK already blocks out some common Roblox noise, but you may need to make some alterations
+**`BeforeSend`** runs after the scope merge and before encoding. Return the event to send it, return `nil` to drop it. This SDK already drops Roblox's internal noise plus the noise blocklist below, but you may need to make some alterations
 
 ```lua
 SentryRoblox:Init({
@@ -313,6 +314,35 @@ SentryRoblox:Init({
 ```
 
 **`BeforeBreadcrumb`** does the same for breadcrumbs.
+
+**The noise blocklist** is a curated list of unavoidable Roblox engine noise, kept in [`noise/blocklist.json`](noise/blocklist.json) and fetched at runtime, so a rule can be added or retired without an SDK release. Rules match the raw message and traceback, before scrubbing, and apply to uncaught errors, `LogService` warnings and relayed client events. The list is pushed to clients over the relay as well, so known noise never reaches the server or spends a player's relay budget
+
+A snapshot of the list ships inside the SDK. It is what filters when HTTP requests are disabled, and in the moment before the first fetch lands, so a server without HTTP still keeps the rules that existed when the version was released
+
+| option            | type     | default                     |
+| ----------------- | -------- | --------------------------- |
+| `URL`             | `string` | the `main` copy of the list |
+| `RefreshInterval` | `number` | `3600`                      |
+| `ExtraRules`      | `{Rule}` | `{}`                        |
+
+A rule is `{ Id, Match, Type }`, where `Type` is `"substring"` or `"pattern"` (a Lua pattern). `ExtraRules` are merged over the fetched list
+
+```lua
+SentryRoblox:Init({
+	DSN = DSN,
+	Integrations = {
+		SentryRoblox.Integrations.Blocklist({
+			ExtraRules = {
+				{ Id = "backpack-missing", Match = "Backpack is not a valid member of Player", Type = "substring" },
+			},
+		}),
+	},
+})
+```
+
+`DisabledIntegrations = { "Blocklist" }` stops the live updates. The shipped snapshot still filters
+
+If an entry belongs on the list for everyone, send it to [`noise/blocklist.json`](noise/blocklist.json). [`noise/README.md`](noise/README.md) has the schema and the bar for adding a rule
 
 **Roblox-side service failures are not filtered by default.** A `502: API Services rejected request` from `DataStoreService` means Roblox failed the request rather than your script, but it surfaces through your own call, so it is also the only signal you get when saves stop working. To drop it globally, register a configured `ScriptContextError` in place of the default one:
 
@@ -573,6 +603,7 @@ What changed (so far):
 
 - Client events are now untrusted and heavily validated
 - Roblox's internal noise (CoreScript, CoreGui and CorePackages), as well as most exploit scripts (nil origins, not a descendant of `game`, generated-looking script names), are filtered by default
+- The remaining engine noise is covered by a curated blocklist fetched at runtime, so the list moves without waiting for a release
 - Name scrubber was replaced with more reliable methods
 - PII handling was redesigned around grouping
 - Custom integrations were rebuilt from the ground up

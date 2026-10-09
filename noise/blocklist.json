@@ -1,0 +1,82 @@
+{
+	"schema": 1,
+	"updated": "2026-10-08",
+	"rules": [
+		{
+			"id": "http-dns-resolve",
+			"match": "HttpError: DnsResolve",
+			"reason": "The player's device could not resolve the host. Roblox web APIs fail this way on a bad connection"
+		},
+		{
+			"id": "http-connect-fail",
+			"match": "HttpError: ConnectFail",
+			"reason": "The connection could not be established from the player's device"
+		},
+		{
+			"id": "http-timeout",
+			"match": "HttpError: Timed[Oo]ut",
+			"type": "pattern",
+			"reason": "The request timed out on the player's connection. Roblox prints Timedout on some paths and TimedOut on others"
+		},
+		{
+			"id": "http-net-fail",
+			"match": "HttpError: NetFail",
+			"reason": "Network-level failure on the player's device"
+		},
+		{
+			"id": "http-aborted",
+			"match": "HttpError: Aborted",
+			"reason": "The client aborted the request before it completed"
+		},
+		{
+			"id": "http-connection-closed",
+			"match": "HttpError: ConnectionClosed",
+			"reason": "The connection was closed mid-request by the remote side"
+		},
+		{
+			"id": "http-inactivity-timeout",
+			"match": "HttpError: InactivityTimeout",
+			"reason": "No data arrived for long enough that the client gave up"
+		},
+		{
+			"id": "http-ssl-connect-fail",
+			"match": "HttpError: SslConnectFail",
+			"reason": "The TLS handshake failed on the player's device"
+		},
+		{
+			"id": "http-ssl-verification-fail",
+			"match": "HttpError: SslVerificationFail",
+			"reason": "Certificate verification failed, usually a captive portal or a player-side proxy"
+		},
+		{
+			"id": "http-server-protocol-error",
+			"match": "HttpError: ServerProtocolError",
+			"reason": "The remote sent a response the client could not parse"
+		},
+		{
+			"id": "player-not-in-datamodel",
+			"match": "Player not in datamodel",
+			"reason": "The player left while a yielding group or rank lookup was in flight. The engine raises after the fact, so the game cannot prevent it"
+		},
+		{
+			"id": "player-being-removed",
+			"match": "Character cannot be changed as Player",
+			"reason": "The engine raises this when a character load races a player leaving"
+		},
+		{
+			"id": "datastore-request-queued",
+			"match": "DataStore request was added to queue",
+			"reason": "Roblox throttled a DataStore call and queued it. Batch requests to reduce it; queue depth is not actionable per event"
+		},
+		{
+			"id": "stylelink-multiple",
+			"match": "Multiple StyleLinks under RobloxGui",
+			"reason": "Roblox CoreGui emits this on some client builds, including sessions that use no StyleLinks"
+		},
+		{
+			"id": "guiservice-selected-object",
+			"match": "Setting GuiService.SelectedObject to invalid GuiObject",
+			"reason": "Selection warning that also fires from CoreGui, and from objects that exist but are not valid selection targets yet"
+		}
+	]
+}

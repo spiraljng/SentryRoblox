@@ -1,3 +1,4 @@
+local Noise = require(script.Parent.Detection.Noise)
 local Policy = require(script.Parent.Detection.Policy)
 local Types = require(script.Parent:WaitForChild("Types"))
 
@@ -46,6 +47,8 @@ local function LogServiceMessageOut(Options: Options?): Types.Integration
 				if SelfFilter and string.find(Message, SelfPattern, 1, true) ~= nil then return end
 
 				if Policy.IsInternalText(Message) then return end
+
+				if Noise.IsBlocked(Message) ~= nil then return end
 
 				if Policy.MatchesAny(Message, IgnorePatterns) then return end
 

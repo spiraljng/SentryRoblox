@@ -1,3 +1,4 @@
+local Noise = require(script.Parent.Detection.Noise)
 local Policy = require(script.Parent.Detection.Policy)
 local Types = require(script.Parent:WaitForChild("Types"))
 local Protocol = require(script:WaitForChild("Protocol"))
@@ -43,12 +44,14 @@ local function SentryClientRelay(Options: Options?): Types.Integration
 
 			local function IsAcceptable(Clean: any): boolean
 				if Policy.IsInternalText(Clean.traceback) then return false end
+				if Noise.IsBlocked(Clean.traceback) ~= nil then return false end
 
 				local Exceptions = Clean.event.exception
 
 				if Exceptions ~= nil then
 					for _, Exception in Exceptions do
 						if Policy.IsInternalText(Exception.value) then return false end
+						if Noise.IsBlocked(Exception.value) ~= nil then return false end
 					end
 				end
 
@@ -56,8 +59,28 @@ local function SentryClientRelay(Options: Options?): Types.Integration
 
 				if Message ~= nil and Policy.IsInternalText(Message.message) then return false end
 
+				if Message ~= nil and Noise.IsBlocked(Message.message) ~= nil then return false end
+
 				return true
 			end
+
+			local function Push(Player: Player?): ()
+				local Payload = {
+					kind = "blocklist",
+					schema = Noise.Schema,
+					rules = Noise.Rules(),
+				}
+
+				if Player ~= nil then
+					Remote:FireClient(Player, Payload)
+				else
+					Remote:FireAllClients(Payload)
+				end
+			end
+
+			local Unsubscribe = Noise.OnChange(function()
+				Push(nil)
+			end)
 
 			local Connections = {}
 
@@ -65,6 +88,12 @@ local function SentryClientRelay(Options: Options?): Types.Integration
 				Connections,
 				Remote.OnServerEvent:Connect(function(Player: Player, Envelope: any)
 					if not Protocol.Allow(Limiter, Player, Clock()) then return end
+
+					if type(Envelope) == "table" and Envelope.kind == "blocklist" then
+						Push(Player)
+
+						return
+					end
 
 					local Valid = Protocol.ValidateEnvelope(Envelope)
 
@@ -97,7 +126,16 @@ local function SentryClientRelay(Options: Options?): Types.Integration
 				end)
 			)
 
+			table.insert(
+				Connections,
+				Players.PlayerAdded:Connect(function(Player: Player)
+					Push(Player)
+				end)
+			)
+
 			return function()
+				Unsubscribe()
+
 				for _, Connection in Connections do
 					Connection:Disconnect()
 				end

@@ -11,6 +11,8 @@ includes = [
 	"LICENSE",
 	"src/**/*.luau",
 	"src/**/*.json",
+	"noise/**/*.json",
+	"noise/**/*.md",
 ]
 
 [indices]

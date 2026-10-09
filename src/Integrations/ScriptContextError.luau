@@ -1,3 +1,4 @@
+local Noise = require(script.Parent.Detection.Noise)
 local Policy = require(script.Parent.Detection.Policy)
 local Types = require(script.Parent:WaitForChild("Types"))
 
@@ -37,6 +38,8 @@ local function ScriptContextError(Options: Options?): Types.Integration
 				local Keep = Policy.Decide(Origin, TracebackText, Root, Filter)
 
 				if not Keep then return end
+
+				if Noise.IsBlocked(Message) ~= nil or Noise.IsBlocked(TracebackText) ~= nil then return end
 
 				local Clean = string.match(Message, LocationPrefix) or Message
 

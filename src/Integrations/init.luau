@@ -1,3 +1,4 @@
+local Blocklist = require(script:WaitForChild("Blocklist"))
 local LogServiceMessageOut = require(script:WaitForChild("LogServiceMessageOut"))
 local PlayerContext = require(script:WaitForChild("PlayerContext"))
 local ScriptContextError = require(script:WaitForChild("ScriptContextError"))
@@ -7,6 +8,7 @@ local TrackSessions = require(script:WaitForChild("TrackSessions"))
 
 local Integrations = {}
 
+Integrations.Blocklist = Blocklist
 Integrations.LogServiceMessageOut = LogServiceMessageOut
 Integrations.PlayerContext = PlayerContext
 Integrations.ScriptContextError = ScriptContextError
@@ -21,6 +23,7 @@ Integrations.Defaults = table.freeze({
 	LogServiceMessageOut(),
 	TrackSessions(),
 	SentryClientRelay(),
+	Blocklist(),
 })
 
 return table.freeze(Integrations)
