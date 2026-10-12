@@ -1,6 +1,6 @@
 {
 	"schema": 1,
-	"updated": "2026-10-08",
+	"updated": "2026-10-12",
 	"rules": [
 		{
 			"id": "http-dns-resolve",
@@ -74,9 +74,44 @@
 			"reason": "Roblox CoreGui emits this on some client builds, including sessions that use no StyleLinks"
 		},
 		{
+			"id": "stylelink-multiple-any",
+			"match": "Multiple StyleLinks under",
+			"reason": "The same engine warning under a parent other than RobloxGui, which CoreGui also emits on some builds"
+		},
+		{
 			"id": "guiservice-selected-object",
 			"match": "Setting GuiService.SelectedObject to invalid GuiObject",
 			"reason": "Selection warning that also fires from CoreGui, and from objects that exist but are not valid selection targets yet"
+		},
+		{
+			"id": "infinite-yield",
+			"match": "Infinite yield possible on",
+			"reason": "The engine prints this once a WaitForChild passes five seconds. Cosmetic effects and optional events wait on parts that may never arrive"
+		},
+		{
+			"id": "marketplace-gamepass-http-fail",
+			"match": "MarketplaceService::getProductInfo - GetGamePassInfo failed: HTTP request failed",
+			"reason": "The marketplace backend failed a game pass lookup. Roblox-side, transient"
+		},
+		{
+			"id": "marketplace-product-http-fail",
+			"match": "MarketplaceService::getProductInfo - GetDeveloperProductInfo failed: HTTP request failed",
+			"reason": "The marketplace backend failed a developer product lookup, either a server error or a dropped connection"
+		},
+		{
+			"id": "engine-internal-error",
+			"match": "InternalError: Internal Error.",
+			"reason": "A generic engine-internal failure, usually a DataStore or engine backend call. It surfaces inside the calling handler and has no game-side cause"
+		},
+		{
+			"id": "animation-track-limit",
+			"match": "AnimationTrack limit of 64 tracks exceeded",
+			"reason": "The engine caps AnimationTracks at 64 per Animator. Tracks are leaked somewhere, but the warning itself is not actionable per event"
+		},
+		{
+			"id": "exploit-ui-rayfield",
+			"match": "Rayfield",
+			"reason": "Rayfield is an exploit-script UI library. Its banner reaches LogService from the executor's own environment, which no game script can intercept"
 		}
 	]
 }
