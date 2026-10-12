@@ -25,12 +25,26 @@ local Fallback: { Rule } = {
 	{ Id = "player-not-in-datamodel", Match = "Player not in datamodel", Type = "substring" },
 	{ Id = "player-being-removed", Match = "Character cannot be changed as Player", Type = "substring" },
 	{ Id = "datastore-request-queued", Match = "DataStore request was added to queue", Type = "substring" },
-	{ Id = "stylelink-multiple", Match = "Multiple StyleLinks under RobloxGui", Type = "substring" },
+	{ Id = "stylelink-multiple", Match = "Multiple StyleLinks under", Type = "substring" },
 	{
 		Id = "guiservice-selected-object",
 		Match = "Setting GuiService.SelectedObject to invalid GuiObject",
 		Type = "substring",
 	},
+	{ Id = "infinite-yield", Match = "Infinite yield possible on", Type = "substring" },
+	{
+		Id = "marketplace-gamepass-http-fail",
+		Match = "MarketplaceService::getProductInfo - GetGamePassInfo failed: HTTP request failed",
+		Type = "substring",
+	},
+	{
+		Id = "marketplace-product-http-fail",
+		Match = "MarketplaceService::getProductInfo - GetDeveloperProductInfo failed: HTTP request failed",
+		Type = "substring",
+	},
+	{ Id = "engine-internal-error", Match = "InternalError: Internal Error.", Type = "substring" },
+	{ Id = "animation-track-limit", Match = "AnimationTrack limit of 64 tracks exceeded", Type = "substring" },
+	{ Id = "exploit-ui-rayfield", Match = "Rayfield", Type = "substring" },
 }
 
 Noise.Fallback = table.freeze(Fallback)

@@ -140,6 +140,12 @@ return function(t)
 	end)
 
 	t.describe("Noise.Fallback", function()
+		t.test("blocks exploit UI banners", function()
+			Noise.Reset()
+
+			t.expect(Noise.IsBlocked("Rayfield | Build Mismatch")).never_is(nil)
+		end)
+
 		t.test("mirrors every rule in noise/blocklist.json", function()
 			local Decoded = Serde.decode("json", fs.readFile("noise/blocklist.json"))
 			local Rules = Noise.Compile(Decoded)
