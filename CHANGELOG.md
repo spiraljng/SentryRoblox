@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.3.0 - 2026-10-12
+
+### Added
+
+- Rules for engine noise with no game-side cause: `Infinite yield possible`, `MarketplaceService::getProductInfo` HTTP failures, `InternalError: Internal Error.` and the 64-track animation cap. The shipped snapshot carries them, so they filter before the first fetch lands
+- An `exploit-ui-rayfield` rule, so an executor's Rayfield banner is dropped instead of being reported as a game warning. Client scripts each keep their own environment, so the engine leaves no runtime way to attribute a `LogService` warning to a script and a signature is the only lever
+
+### Changed
+
+- `stylelink-multiple` matches `Multiple StyleLinks under` instead of the `RobloxGui` parent only
+
 ## 2.2.0 - 2026-10-08
 
 ### Added
