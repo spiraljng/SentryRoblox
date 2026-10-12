@@ -70,8 +70,13 @@
 		},
 		{
 			"id": "stylelink-multiple",
+			"match": "Multiple StyleLinks under RobloxGui",
+			"reason": "Roblox CoreGui emits this on some client builds, including sessions that use no StyleLinks"
+		},
+		{
+			"id": "stylelink-multiple-any",
 			"match": "Multiple StyleLinks under",
-			"reason": "The engine emits this for any parent holding more than one StyleLink, including CoreGui and sessions that use no StyleLinks"
+			"reason": "The same engine warning under a parent other than RobloxGui, which CoreGui also emits on some builds"
 		},
 		{
 			"id": "guiservice-selected-object",

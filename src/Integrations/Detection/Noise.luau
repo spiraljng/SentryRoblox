@@ -25,7 +25,8 @@ local Fallback: { Rule } = {
 	{ Id = "player-not-in-datamodel", Match = "Player not in datamodel", Type = "substring" },
 	{ Id = "player-being-removed", Match = "Character cannot be changed as Player", Type = "substring" },
 	{ Id = "datastore-request-queued", Match = "DataStore request was added to queue", Type = "substring" },
-	{ Id = "stylelink-multiple", Match = "Multiple StyleLinks under", Type = "substring" },
+	{ Id = "stylelink-multiple", Match = "Multiple StyleLinks under RobloxGui", Type = "substring" },
+	{ Id = "stylelink-multiple-any", Match = "Multiple StyleLinks under", Type = "substring" },
 	{
 		Id = "guiservice-selected-object",
 		Match = "Setting GuiService.SelectedObject to invalid GuiObject",

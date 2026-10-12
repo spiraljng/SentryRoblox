@@ -4,12 +4,9 @@
 
 ### Added
 
-- Rules for engine noise with no game-side cause: `Infinite yield possible`, `MarketplaceService::getProductInfo` HTTP failures, `InternalError: Internal Error.` and the 64-track animation cap. The shipped snapshot carries them, so they filter before the first fetch lands
+- Rules for engine noise with no game-side cause: `Infinite yield possible`, the marketplace `getProductInfo` HTTP failures, `InternalError: Internal Error.` and the 64-track animation cap. The shipped snapshot carries them, so they filter before the first fetch lands
+- A `stylelink-multiple-any` rule for the engine's StyleLink warning under parents other than `RobloxGui`. The existing `stylelink-multiple` rule keeps its narrower match so released snapshots stay valid against the live list
 - An `exploit-ui-rayfield` rule, so an executor's Rayfield banner is dropped instead of being reported as a game warning. Client scripts each keep their own environment, so the engine leaves no runtime way to attribute a `LogService` warning to a script and a signature is the only lever
-
-### Changed
-
-- `stylelink-multiple` matches `Multiple StyleLinks under` instead of the `RobloxGui` parent only
 
 ## 2.2.0 - 2026-10-08
 
