@@ -1,6 +1,6 @@
 {
 	"schema": 1,
-	"updated": "2026-10-12",
+	"updated": "2026-10-17",
 	"rules": [
 		{
 			"id": "http-dns-resolve",
@@ -112,6 +112,32 @@
 			"id": "exploit-ui-rayfield",
 			"match": "Rayfield",
 			"reason": "Rayfield is an exploit-script UI library. Its banner reaches LogService from the executor's own environment, which no game script can intercept"
+		},
+		{
+			"id": "locale-load-failed",
+			"match": "Failed to load locale",
+			"reason": "LocalizationService could not load a locale table for the player's locale. Engine-side, and no game script can supply the missing table"
+		},
+		{
+			"id": "messaging-service-reconnecting",
+			"match": "^reconnecting$",
+			"type": "pattern",
+			"reason": "MessagingService drops its subscription and surfaces the bare string reconnecting. Engine-side, and libraries such as ProfileStore retry on their own"
+		},
+		{
+			"id": "group-api-http-fail",
+			"match": "InGroup failed because HTTP",
+			"reason": "The Roblox group backend returned a 5xx for IsInGroup or GetRankInGroup. Roblox-side and transient, the same shape as the marketplace rules"
+		},
+		{
+			"id": "translator-not-published",
+			"match": "Publishing the game is required to use GetTranslatorForPlayerAsync API",
+			"reason": "LocalizationService refuses to build a translator for a place that has never been published. Engine-side, not game code"
+		},
+		{
+			"id": "parent-set-to-null",
+			"match": "Something unexpectedly tried to set the parent of",
+			"reason": "Engine lifecycle race when a ChildAdded or DescendantAdded handler reparents or destroys the instance. CoreGui emits it too and it is not actionable"
 		}
 	]
 }
