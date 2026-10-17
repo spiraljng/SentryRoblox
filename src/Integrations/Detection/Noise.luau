@@ -46,6 +46,15 @@ local Fallback: { Rule } = {
 	{ Id = "engine-internal-error", Match = "InternalError: Internal Error.", Type = "substring" },
 	{ Id = "animation-track-limit", Match = "AnimationTrack limit of 64 tracks exceeded", Type = "substring" },
 	{ Id = "exploit-ui-rayfield", Match = "Rayfield", Type = "substring" },
+	{ Id = "locale-load-failed", Match = "Failed to load locale", Type = "substring" },
+	{ Id = "messaging-service-reconnecting", Match = "^reconnecting$", Type = "pattern" },
+	{ Id = "group-api-http-fail", Match = "InGroup failed because HTTP", Type = "substring" },
+	{
+		Id = "translator-not-published",
+		Match = "Publishing the game is required to use GetTranslatorForPlayerAsync API",
+		Type = "substring",
+	},
+	{ Id = "parent-set-to-null", Match = "Something unexpectedly tried to set the parent of", Type = "substring" },
 }
 
 Noise.Fallback = table.freeze(Fallback)
