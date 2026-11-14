@@ -6,6 +6,7 @@ export type Options = {
 	IncludeInternalFrames: boolean?,
 	MaximumFrames: number?,
 	IgnoredFunctions: { string }?,
+	RejectInjectedFrames: boolean?,
 }
 
 local DefaultIgnoredFunctions = {
@@ -47,6 +48,14 @@ local function StackProcessor(Options: Options?): Types.Integration
 			local SdkOptions = Context.Options
 			local Include = if SdkOptions ~= nil then SdkOptions.InAppInclude else nil
 			local Exclude = if SdkOptions ~= nil then SdkOptions.InAppExclude else nil
+			local RejectInjected = Settings.RejectInjectedFrames ~= false
+			local Debug = SdkOptions ~= nil and SdkOptions.Debug == true
+
+			local function IsInjected(Parsed: Traceback.Frame): boolean
+				if Parsed.Line == nil then return false end
+
+				return Parsed.Path == nil or Parsed.Path == ""
+			end
 
 			local function IsInApp(Path: string?): boolean
 				if Exclude ~= nil and Policy.MentionsAny(Path, Exclude) then return false end
@@ -78,6 +87,14 @@ local function StackProcessor(Options: Options?): Types.Integration
 				local Unfiltered = {}
 
 				for _, Parsed in Traceback.Parse(Text) do
+					if RejectInjected and IsInjected(Parsed) then
+						if Debug then
+							print(`[SentryRoblox] dropped an event with an unnamed stack frame at line {Parsed.Line}`)
+						end
+
+						return nil
+					end
+
 					if Parsed.Function ~= nil and table.find(Ignored, Parsed.Function) ~= nil then continue end
 
 					if not IncludeInternalFrames and Parsed.Path ~= nil and Policy.IsInternalText(Parsed.Path) then

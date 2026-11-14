@@ -19,6 +19,7 @@ Defaults.Options = table.freeze({
 	ServerName = (if game.JobId ~= "" then game.JobId else "local"),
 
 	SendClientEvents = true,
+	ClientWarnings = { Allow = table.freeze({}) },
 	SendStudioEvents = false,
 	SendDefaultPII = false,
 

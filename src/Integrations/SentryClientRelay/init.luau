@@ -1,3 +1,4 @@
+local Allowlist = require(script.Parent.Detection.Allowlist)
 local Noise = require(script.Parent.Detection.Noise)
 local Policy = require(script.Parent.Detection.Policy)
 local Types = require(script.Parent:WaitForChild("Types"))
@@ -20,6 +21,9 @@ local function SentryClientRelay(Options: Options?): Types.Integration
 			local SdkOptions = Context.Options
 
 			if SdkOptions ~= nil and SdkOptions.SendClientEvents == false then return nil end
+
+			local Warnings = if SdkOptions ~= nil then SdkOptions.ClientWarnings else nil
+			local Allow = Allowlist.Compile(if Warnings ~= nil then Warnings.Allow else nil)
 
 			local Players = Context.Services.Players
 			local Clock = Context.Services.Clock or os.clock
@@ -57,18 +61,22 @@ local function SentryClientRelay(Options: Options?): Types.Integration
 
 				local Message = Clean.event.message
 
-				if Message ~= nil and Policy.IsInternalText(Message.message) then return false end
-
-				if Message ~= nil and Noise.IsBlocked(Message.message) ~= nil then return false end
+				if Message ~= nil then
+					if type(Message.message) ~= "string" then return false end
+					if Policy.IsInternalText(Message.message) then return false end
+					if Noise.IsBlocked(Message.message) ~= nil then return false end
+					if not Allowlist.Matches(Allow, Message.message) then return false end
+				end
 
 				return true
 			end
 
 			local function Push(Player: Player?): ()
 				local Payload = {
-					kind = "blocklist",
+					kind = "config",
 					schema = Noise.Schema,
 					rules = Noise.Rules(),
+					allow = Allow,
 				}
 
 				if Player ~= nil then
@@ -89,7 +97,7 @@ local function SentryClientRelay(Options: Options?): Types.Integration
 				Remote.OnServerEvent:Connect(function(Player: Player, Envelope: any)
 					if not Protocol.Allow(Limiter, Player, Clock()) then return end
 
-					if type(Envelope) == "table" and Envelope.kind == "blocklist" then
+					if type(Envelope) == "table" and Envelope.kind == "config" then
 						Push(Player)
 
 						return

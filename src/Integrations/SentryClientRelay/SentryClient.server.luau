@@ -2,25 +2,30 @@ local RunService = game:GetService("RunService")
 local ScriptContext = game:GetService("ScriptContext")
 local LogService = game:GetService("LogService")
 
+local Allowlist = require(script.Parent.Parent.Detection.Allowlist)
 local Noise = require(script.Parent.Parent.Detection.Noise)
 local Policy = require(script.Parent.Parent.Detection.Policy)
 
 if not RunService:IsClient() then return end
+
+local Allow: { Allowlist.Rule } = table.freeze({})
 
 local Relay = script.Parent:WaitForChild("RemoteEvent", 30)
 
 if Relay == nil then return end
 
 (Relay :: RemoteEvent).OnClientEvent:Connect(function(Payload: any)
-	if type(Payload) ~= "table" or Payload.kind ~= "blocklist" then return end
+	if type(Payload) ~= "table" or Payload.kind ~= "config" then return end
 
 	local Rules = Noise.Compile(Payload)
 
 	if Rules ~= nil then Noise.Use(Rules) end
+
+	Allow = Allowlist.Compile(Payload.allow)
 end)
 
 pcall(function()
-	(Relay :: RemoteEvent):FireServer({ kind = "blocklist" })
+	(Relay :: RemoteEvent):FireServer({ kind = "config" })
 end)
 
 local LocationPrefix = "^[^:]+:%d+: (.+)$"
@@ -65,6 +70,8 @@ LogService.MessageOut:Connect(function(Message: string, MessageType: Enum.Messag
 	if Policy.IsInternalText(Message) then return end
 
 	if Noise.IsBlocked(Message) ~= nil then return end
+
+	if not Allowlist.Matches(Allow, Message) then return end
 
 	Forward({
 		message = {
