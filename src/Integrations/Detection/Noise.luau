@@ -55,6 +55,24 @@ local Fallback: { Rule } = {
 		Type = "substring",
 	},
 	{ Id = "parent-set-to-null", Match = "Something unexpectedly tried to set the parent of", Type = "substring" },
+	{ Id = "messaging-invalid-universe", Match = "MessagingService: Invalid universe ID", Type = "substring" },
+	{
+		Id = "datastore-unpublished",
+		Match = "You must publish this place to the web to access DataStore",
+		Type = "substring",
+	},
+	{
+		Id = "memorystore-unpublished",
+		Match = "You must publish this place to use MemoryStoreService",
+		Type = "substring",
+	},
+	{ Id = "datastore-emulator-teardown", Match = "DataStore emulator is tearing down", Type = "substring" },
+	{ Id = "message-router-disconnected", Match = "Message Router Service disconnected", Type = "substring" },
+	{
+		Id = "marketplace-gamepass-ownership-http-fail",
+		Match = "MarketplaceService::userOwnsGamePassAsync - GetGamePassOwnership failed: HTTP request failed",
+		Type = "substring",
+	},
 }
 
 Noise.Fallback = table.freeze(Fallback)

@@ -11,6 +11,7 @@
 
 - `ClientWarnings.Allow`, the list of client warnings the client half forwards. A client warning is captured only when it matches an entry, because the engine leaves no way to attribute one: `LogService.MessageOut` carries no origin, its `context` argument is nil for `print` and `warn`, and every script gets its own global table so `warn` cannot be replaced for other scripts
 - Rejection of injected stack frames. An error raised by injected code arrives with a frame that has a line number and no script name, and a script in the game cannot produce one, so the event is dropped without a signature list to keep current. `StackProcessor({ RejectInjectedFrames = false })` keeps them instead
+- Rules for the unpublished-place refusals from `MessagingService`, `DataStoreService` and `MemoryStoreService`, the Studio DataStore emulator teardown, the internal message router disconnecting on shutdown, and the `userOwnsGamePassAsync` marketplace HTTP failure. The shipped snapshot carries them, so they filter before the first fetch lands
 
 ## 2.3.0 - 2026-10-12
 
