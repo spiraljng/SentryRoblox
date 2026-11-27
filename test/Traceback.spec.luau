@@ -151,5 +151,14 @@ return function(t)
 			t.expect(Frames[1].Line).is(80)
 			t.expect(Frames[1].Function).is(nil)
 		end)
+
+		t.test("gives an injected frame an empty path rather than nil", function()
+			local Frames =
+				Traceback.Parse("Stack Begin\nPlayers.Bob.PlayerScripts.Quests, line 229\n, line 8343\nStack End")
+
+			t.expect(#Frames).is(2)
+			t.expect(Frames[2].Path).is("")
+			t.expect(Frames[2].Line).is(8343)
+		end)
 	end)
 end

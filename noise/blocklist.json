@@ -1,6 +1,6 @@
 {
 	"schema": 1,
-	"updated": "2026-10-17",
+	"updated": "2026-11-14",
 	"rules": [
 		{
 			"id": "http-dns-resolve",
@@ -138,6 +138,36 @@
 			"id": "parent-set-to-null",
 			"match": "Something unexpectedly tried to set the parent of",
 			"reason": "Engine lifecycle race when a ChildAdded or DescendantAdded handler reparents or destroys the instance. CoreGui emits it too and it is not actionable"
-		}
+    },
+		{
+			"id": "messaging-invalid-universe",
+			"match": "MessagingService: Invalid universe ID",
+			"reason": "MessagingService refuses to work for a place that has never been published. Matched without the trailing 'Please ensure your game is published' boilerplate, which Roblox rewords"
+		},
+		{
+			"id": "datastore-unpublished",
+			"match": "You must publish this place to the web to access DataStore",
+			"reason": "DataStoreService refuses to work for a place that has never been published. The trailing period is left off so a reworded message still matches"
+		},
+		{
+			"id": "memorystore-unpublished",
+			"match": "You must publish this place to use MemoryStoreService",
+			"reason": "MemoryStoreService refuses to work for a place that has never been published, the same shape as the DataStore rule"
+		},
+		{
+			"id": "datastore-emulator-teardown",
+			"match": "DataStore emulator is tearing down",
+			"reason": "The Studio DataStore emulator shutting down between playtests. The real service never emits it"
+		},
+		{
+			"id": "message-router-disconnected",
+			"match": "Message Router Service disconnected",
+			"reason": "Engine lifecycle race in the internal message router on server shutdown. Roblox-side and not actionable"
+		},
+		{
+			"id": "marketplace-gamepass-ownership-http-fail",
+			"match": "MarketplaceService::userOwnsGamePassAsync - GetGamePassOwnership failed: HTTP request failed",
+			"reason": "Engine marketplace HTTP failure, the same shape as the two getProductInfo rules. The status code is deliberately left out of the match"
+    }
 	]
 }

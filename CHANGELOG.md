@@ -1,5 +1,26 @@
 # Changelog
 
+## 2.4.0 - 2026-11-14
+
+### Changed
+
+- **Client warnings are deny-by-default.** The client half now forwards a warning only when it matches `ClientWarnings.Allow`, which is empty by default. A game that relied on client warnings arriving on their own has to list them. Client errors are unchanged, since they carry a traceback and an origin
+- The relay payload that carries the noise blocklist also carries the warning allowlist, and its `kind` is now `config` instead of `blocklist`
+
+### Added
+
+- `ClientWarnings.Allow`, the list of client warnings the client half forwards. A client warning is captured only when it matches an entry, because the engine leaves no way to attribute one: `LogService.MessageOut` carries no origin, its `context` argument is nil for `print` and `warn`, and every script gets its own global table so `warn` cannot be replaced for other scripts
+- Rejection of injected stack frames. An error raised by injected code arrives with a frame that has a line number and no script name, and a script in the game cannot produce one, so the event is dropped without a signature list to keep current. `StackProcessor({ RejectInjectedFrames = false })` keeps them instead
+- Rules for the unpublished-place refusals from `MessagingService`, `DataStoreService` and `MemoryStoreService`, the Studio DataStore emulator teardown, the internal message router disconnecting on shutdown, and the `userOwnsGamePassAsync` marketplace HTTP failure. The shipped snapshot carries them, so they filter before the first fetch lands
+
+## 2.3.0 - 2026-10-12
+
+### Added
+
+- Rules for engine noise with no game-side cause: `Infinite yield possible`, the marketplace `getProductInfo` HTTP failures, `InternalError: Internal Error.` and the 64-track animation cap. The shipped snapshot carries them, so they filter before the first fetch lands
+- A `stylelink-multiple-any` rule for the engine's StyleLink warning under parents other than `RobloxGui`. The existing `stylelink-multiple` rule keeps its narrower match so released snapshots stay valid against the live list
+- Rules for engine noise the first pass did not cover: a `Failed to load locale` miss, the bare `reconnecting` that `MessagingService` throws, a group-backend 5xx on `IsInGroup` or `GetRankInGroup`, the `GetTranslatorForPlayerAsync` warning an unpublished place raises, and the `Something unexpectedly tried to set the parent of` lifecycle race
+
 ## 2.2.0 - 2026-10-08
 
 ### Added

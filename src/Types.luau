@@ -130,6 +130,12 @@ export type Integration<Context = any> = {
 	Setup: (Context: Context) -> (() -> ())?,
 }
 
+export type ClientWarningRule = string | { Match: string, Type: string? }
+
+export type ClientWarnings = {
+	Allow: { ClientWarningRule }?,
+}
+
 export type Options = {
 	DSN: string?,
 	Debug: boolean?,
@@ -143,6 +149,7 @@ export type Options = {
 	ServerName: string?,
 
 	SendClientEvents: boolean?,
+	ClientWarnings: ClientWarnings?,
 	SendStudioEvents: boolean?,
 	SendDefaultPII: boolean?,
 
