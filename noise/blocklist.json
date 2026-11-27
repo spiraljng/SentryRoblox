@@ -168,5 +168,6 @@
 			"id": "marketplace-gamepass-ownership-http-fail",
 			"match": "MarketplaceService::userOwnsGamePassAsync - GetGamePassOwnership failed: HTTP request failed",
 			"reason": "Engine marketplace HTTP failure, the same shape as the two getProductInfo rules. The status code is deliberately left out of the match"
+    }
 	]
 }
