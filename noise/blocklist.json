@@ -138,7 +138,7 @@
 			"id": "parent-set-to-null",
 			"match": "Something unexpectedly tried to set the parent of",
 			"reason": "Engine lifecycle race when a ChildAdded or DescendantAdded handler reparents or destroys the instance. CoreGui emits it too and it is not actionable"
-		},
+    },
 		{
 			"id": "messaging-invalid-universe",
 			"match": "MessagingService: Invalid universe ID",
@@ -168,6 +168,5 @@
 			"id": "marketplace-gamepass-ownership-http-fail",
 			"match": "MarketplaceService::userOwnsGamePassAsync - GetGamePassOwnership failed: HTTP request failed",
 			"reason": "Engine marketplace HTTP failure, the same shape as the two getProductInfo rules. The status code is deliberately left out of the match"
-		}
 	]
 }
